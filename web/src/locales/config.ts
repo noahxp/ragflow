@@ -70,11 +70,14 @@ i18n
   .use(LanguageDetector)
   .init({
     detection: {
+      order: ['localStorage'],
       lookupLocalStorage: 'lng',
+      caches: ['localStorage'],
     },
     supportedLngs: Object.values(LanguageAbbreviation),
     resources,
     fallbackLng: 'en',
+    lng: 'en', // Set default language to English
     interpolation: {
       escapeValue: false,
     },

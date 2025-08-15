@@ -5,7 +5,7 @@ services:
       - elasticsearch
     image: elasticsearch:${STACK_VERSION}
     volumes:
-      - esdata01:/usr/share/elasticsearch/data
+      - /opt/ragflow/esdata01:/usr/share/elasticsearch/data
     ports:
       - ${ES_PORT}:9200
     env_file: .env
@@ -33,7 +33,7 @@ services:
       retries: 120
     networks:
       - ragflow
-    restart: on-failure
+    restart: always
 
   opensearch01:
     container_name: ragflow-opensearch-01
@@ -41,7 +41,7 @@ services:
       - opensearch
     image: hub.icert.top/opensearchproject/opensearch:2.19.1
     volumes:
-      - osdata01:/usr/share/opensearch/data
+      - /opt/ragflow/osdata01:/usr/share/opensearch/data
     ports:
       - ${OS_PORT}:9201
     env_file: .env
@@ -71,7 +71,7 @@ services:
       retries: 120
     networks:
       - ragflow
-    restart: on-failure
+    restart: always
 
   infinity:
     container_name: ragflow-infinity
@@ -79,7 +79,7 @@ services:
       - infinity
     image: infiniflow/infinity:v0.6.0-dev5
     volumes:
-      - infinity_data:/var/infinity
+      - /opt/ragflow/infinity_data:/var/infinity
       - ./infinity_conf.toml:/infinity_conf.toml
     command: ["-f", "/infinity_conf.toml"]
     ports:
@@ -101,7 +101,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 120
-    restart: on-failure
+    restart: always
 
   sandbox-executor-manager:
     container_name: ragflow-sandbox-executor-manager
@@ -131,7 +131,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    restart: on-failure
+    restart: always
 
   mysql:
     # mysql:5.7 linux/arm64 image is unavailable.
@@ -152,7 +152,7 @@ services:
     ports:
       - ${MYSQL_PORT}:3306
     volumes:
-      - mysql_data:/var/lib/mysql
+      - /opt/ragflow/mysql_data:/var/lib/mysql
       - ./init.sql:/data/application/init.sql
     networks:
       - ragflow
@@ -161,7 +161,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-    restart: on-failure
+    restart: always
 
   minio:
     image: quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z
@@ -176,10 +176,10 @@ services:
       - MINIO_ROOT_PASSWORD=${MINIO_PASSWORD}
       - TZ=${TIMEZONE}
     volumes:
-      - minio_data:/data
+      - /opt/ragflow/minio_data:/data
     networks:
       - ragflow
-    restart: on-failure
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
@@ -195,16 +195,16 @@ services:
     ports:
       - ${REDIS_PORT}:6379
     volumes:
-      - redis_data:/data
+      - /opt/ragflow/redis_data:/data
     networks:
       - ragflow
-    restart: on-failure
+    restart: always
     healthcheck:
       test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
       interval: 5s
       timeout: 3s
       retries: 3
-      start_period: 10s    
+      start_period: 10s
 
 
 
